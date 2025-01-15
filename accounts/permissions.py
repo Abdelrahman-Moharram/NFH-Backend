@@ -1,29 +1,15 @@
-from rest_framework.permissions import BasePermission
+from roles.models import Role_Permission, Permission
+from rest_framework import response, status 
 
 
-class IsManager(BasePermission):
-    message = "accessing this data is only for Manager or Admin"
-    def has_permission(self, request, view):
-        try:
-            if not  request.user.is_authenticated:
-                return False
-            if request.user.role.name in ['Admin', 'Manager']:
-                return True
-        except:
-            pass
-        
-        return False
 
-
-class IsAdmin(BasePermission):
-    message = "accessing this data is only for Admin"
-    def has_permission(self, request, view):
-        try:
-            if not request.user.is_authenticated:
-                return False
-            if request.user.role.name == "Admin":
-                return True
-        except:
-            pass
-        
-        return False
+def permission_allowed(name):
+    
+    def decorator(view_func):
+        def wrapper_func(request,*args,**kwargs):
+            if request.user and request.user.role and Role_Permission.objects.filter(role=request.user.role, permission__key=name).exists():
+                    return view_func(request,*args,**kwargs)
+            else:
+                return response.Response({'message':'ليس لديك صلاحية تنفيذ هذا الطلب'}, status=status.HTTP_403_FORBIDDEN) 
+        return wrapper_func
+    return decorator 

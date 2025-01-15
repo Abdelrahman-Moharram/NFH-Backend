@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import Status
 import uuid
+from django.conf import settings
 from django.contrib.auth.models import (
     BaseUserManager,
     AbstractBaseUser,
@@ -54,7 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     id                  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username            = models.CharField(unique=True, max_length=255)
     full_name           = models.CharField(max_length=255)
-    ar_name             = models.CharField(max_length=255)
+    # ar_name             = models.CharField(max_length=255)
     
     role                = models.ForeignKey(Role, null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -63,6 +64,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser        = models.BooleanField(default=False)
 
     status              = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
+
+
+    created_at          = models.DateTimeField(auto_now=False, auto_now_add=True)
+    last_update_at      = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)
+    last_delete_at      = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)
+
+    
+    created_by          = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, related_name='user_created_by', on_delete=models.SET_NULL)
+    updated_by          = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name='user_updated_by', on_delete=models.SET_NULL)
+    deleted_by          = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name='user_deleted_by', on_delete=models.SET_NULL)
     
     objects = UserAccountManager()
 

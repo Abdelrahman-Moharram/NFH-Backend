@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from .models import User, Role
-import re
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -33,27 +33,101 @@ class UserSerial(serializers.ModelSerializer):
         model= User
         fields=['id', 'username', 'full_name', 'role']
 
-class UserFormSerial(serializers.ModelSerializer):
-    
+
+
+# class IncludedUserPermissionsSerial(serializers.ModelSerializer):
+#     permission = serializers.SerializerMethodField()
+
+#     def get_permission(self, obj):
+#         return obj.permission.key
+        
+#     class Meta:
+#         model= Role_Permission
+#         fields=['permission']
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    default_error_messages = {
+        "no_active_account": "invalid username or password"
+    }
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['id']             = str(user.id)
+        token['username']       = str(user.username)
+        token['full_name']      = str(user.full_name)
+        token['role']           = str(user.role)
+        # token['permissions']    = [i.permission.key for i in Role_Permission.objects.filter(role=user.role)]
+
+
+        return token
+
+
+class IncludedLawyerSerial(serializers.ModelSerializer):
+    full_name   = serializers.SerializerMethodField()
+    def get_full_name(self, obj):
+        return obj.user.full_name
     class Meta:
         model= User
-        fields=['username', 'full_name', 'role', 'password']
+        fields=['id', 'full_name']
+
+class IncludedUserSerial(serializers.ModelSerializer):
+    class Meta:
+        model= User
+        fields=['id', 'username', 'full_name']
+
+class IncludedRoleSerial(serializers.ModelSerializer):
+    class Meta:
+        model= Role
+        fields=['id', 'name']
+
+# class IncludedUserTypeSerial(serializers.ModelSerializer):
+#     class Meta:
+#         model= UserType
+#         fields=['id', 'name']
 
 
-    @property
-    def is_update(self):
-        return self.instance is not None
+class UserSerial(serializers.ModelSerializer):
+    role        = serializers.ReadOnlyField(source='role.name')
+    class Meta:
+        model= User
+        fields=['id', 'full_name', 'username', 'role']
+
+
+
+class ListUserSerial(serializers.ModelSerializer):
+    # role        = serializers.ReadOnlyField(source='role.name')
+    class Meta:
+        model= User
+        fields=['id', 'full_name', 'username', 'role']
     
-         
+    def to_representation(self, instance):
     
-    def validate_username(self, value):
-        value = value.strip()
+        representation = dict()
+        
+        representation['id']                        = instance.id
+        representation['FullName']                  = instance.full_name
+        representation['Username']                  = instance.username
+        representation['Role']                      = instance.role.name if instance.role else ''
 
 
-        if not self.is_update and User.objects.filter(username=value).exists():
-            raise serializers.ValidationError('This username already exists with another user')
-        return value
+        return representation
     
 
-    def save(self, **kwargs):        
-        return super().save(**kwargs)
+
+
+
+
+
+
+class DetailedUserSerial(serializers.ModelSerializer):
+    # role        = serializers.ReadOnlyField(source='role')
+    # role        = serializers.ReadOnlyField(source='role')
+    class Meta:
+        model= User
+        fields=['id', 'full_name', 'username', 'role']
+
+
+
+

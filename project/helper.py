@@ -1,7 +1,6 @@
 import pandas as pd
 from io import BytesIO
 from django.http import HttpResponse
-from utils.models import Attachment
 from django.template.loader import get_template
 from django.conf import settings
 import pdfkit
@@ -83,15 +82,7 @@ def export_data_table_as_pdf(data, file_name, excluded_cols=[]):
 
 
 
-def compare_and_delete_files(query_dict, list_files):
-    print('here')
-    for f in query_dict:
-        if(f.file not in list_files):
-            # try:
-            #     os.remove( get_file_full_path( str(f.file) ) )
-            # except:
-            #     pass
-            Attachment.objects.filter(file=f.file).delete()
+
 
 
 def to_int(val, default):
