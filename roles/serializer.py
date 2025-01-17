@@ -25,9 +25,9 @@ class RolesListSerializer(serializers.ModelSerializer):
         repr = dict()
 
         repr['id']              = instance.id
-        repr['الدور']           = instance.name
-        repr['تاريخ الإضافة']   = instance.created_at.strftime("%Y-%m-%d %H:%M")
-        repr['أضيف باسطة']      = str(instance.created_by)
+        repr['Role Name']           = instance.name
+        repr['Created At']   = instance.created_at.strftime("%Y-%m-%d %H:%M")
+        repr['Created By']      = str(instance.created_by)
 
         return repr
 

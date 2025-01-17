@@ -7,7 +7,7 @@ from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin
 )
-
+from roles.models import Role
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, username, **kwargs):
@@ -42,12 +42,12 @@ class UserAccountManager(BaseUserManager):
 
         return user
 
-class Role(models.Model):
-    name                = models.CharField(max_length=255)
-    status              = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
+# class Role(models.Model):
+#     name                = models.CharField(max_length=255)
+#     status              = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
 
-    def __str__(self) -> str:
-        return self.name
+#     def __str__(self) -> str:
+#         return self.name
 
 
 

@@ -3,3 +3,4 @@ from .models import *
 
 admin.site.register(Status)
 admin.site.register(ChartType)
+admin.site.register(Schema)

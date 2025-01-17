@@ -2,14 +2,14 @@ from django.core.management.base import BaseCommand
 from roles.models import Permission, Role, Role_Permission, Module
 
 permissions_list = [
-    {'module':'users', 'key':'permissions.users.view', 'label':'عرض جميع المستخدمين'},
-    {'module':'users', 'key':'permissions.users.add', 'label':'إضافة مستخدم'},
-    {'module':'users', 'key':'permissions.users.edit', 'label':'تعديل مستخدم'},
+    {'module':'users', 'key':'permissions.users.view', 'label':'View Users'},
+    {'module':'users', 'key':'permissions.users.add', 'label':'Add User'},
+    {'module':'users', 'key':'permissions.users.edit', 'label':'Add User'},
 
-    {'module':'roles', 'key':'permissions.roles.view', 'label':'عرض جميع الأدوار'},
-    {'module':'roles', 'key':'permissions.roles.add', 'label':'إضافة دور'},
-    {'module':'roles', 'key':'permissions.roles.edit', 'label':'تعديل دور'},
-    {'module':'roles', 'key':'permissions.roles.edit.permissions', 'label':'تعديل صلاحيات دور'},
+    {'module':'roles', 'key':'permissions.roles.view', 'label':'View Roles'},
+    {'module':'roles', 'key':'permissions.roles.add', 'label':'Add Role'},
+    {'module':'roles', 'key':'permissions.roles.edit', 'label':'Edit Role'},
+    {'module':'roles', 'key':'permissions.roles.edit.permissions', 'label':'Edit Role Permissions'},
 ]
 
 

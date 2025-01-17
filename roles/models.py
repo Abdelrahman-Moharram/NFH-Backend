@@ -5,7 +5,6 @@ from project.models import BaseModel, BaseModelManager
 # Create your models here.
 class  Role(BaseModel):
     name                = models.CharField(max_length=50)
-    
     objects = BaseModelManager()
     
     def __str__(self):
@@ -26,6 +25,10 @@ class Permission(BaseModel):
     module              = models.ForeignKey(Module, related_name='permissions', null=True, blank=True, on_delete=models.SET_NULL)
     
     objects = BaseModelManager()
+    class Meta:
+        indexes = [
+            models.Index(fields=['key']),
+        ]
     
     def __str__(self):
         return self.label
@@ -42,4 +45,5 @@ class Role_Permission(BaseModel):
 
     def __str__(self):
         return "يستطيع " + str(self.permission) + " " + str(self.role)
+
 
