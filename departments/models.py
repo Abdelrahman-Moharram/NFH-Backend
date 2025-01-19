@@ -3,14 +3,15 @@ from project.models import BaseModel, BaseModelManager
 
 
 class Department(BaseModel):
-    name            = models.CharField(max_length=254)
-    ar_name         = models.CharField(max_length=254)
-    icon            = models.TextField(null=True, blank=True)
+    name                = models.CharField(max_length=254)
+    ar_name             = models.CharField(max_length=254)
+    icon                = models.FileField(upload_to='departments/icons/')
+    color               = models.CharField(max_length=10, default='#000')
+    order               = models.IntegerField()    
 
-    order           = models.IntegerField()    
+    is_active           = models.BooleanField(default=True)
 
-    is_active       = models.BooleanField(default=True)
-
+    
     @property
     def slug(self):
         return self.name.lower().replace(" ", '-')

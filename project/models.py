@@ -5,9 +5,13 @@ import uuid
 class BaseModel(models.Model):
     id                  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     is_deleted          = models.BooleanField(default=False)
+    is_active           = models.BooleanField(null=True, blank=True, default=True)
+
+
     created_at          = models.DateTimeField(auto_now=False, auto_now_add=True)
     last_update_at      = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)
     last_delete_at      = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)
+    
 
 
     created_by          = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="%(class)s_created_by", on_delete=models.SET_NULL)

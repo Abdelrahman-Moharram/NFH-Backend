@@ -1,3 +1,9 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+
+admin.site.register(Report)
+admin.site.register(Chart)
+admin.site.register(ChartAxis)
+admin.site.register(ChartType)
+admin.site.register(Schema)

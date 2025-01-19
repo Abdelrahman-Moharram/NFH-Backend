@@ -1,5 +1,4 @@
 from django.db import models
-from core.models import Status
 import uuid
 from django.conf import settings
 from django.contrib.auth.models import (
@@ -44,7 +43,7 @@ class UserAccountManager(BaseUserManager):
 
 # class Role(models.Model):
 #     name                = models.CharField(max_length=255)
-#     status              = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
+#     
 
 #     def __str__(self) -> str:
 #         return self.name
@@ -63,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff            = models.BooleanField(default=False)
     is_superuser        = models.BooleanField(default=False)
 
-    status              = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
+    
 
 
     created_at          = models.DateTimeField(auto_now=False, auto_now_add=True)
