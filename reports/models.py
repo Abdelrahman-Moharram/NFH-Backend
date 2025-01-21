@@ -2,7 +2,6 @@ from django.db import models
 from project.models import BaseModel, BaseModelManager
 from departments.models import Department
 
-
 class Report(BaseModel):
     name                = models.CharField(max_length=254)
     department          = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
@@ -29,11 +28,11 @@ class ChartAxis(models.Model):
     choices = [
         ['x', 'x'],
         ['y', 'y'],
-        ['z', 'z'],
     ]
     chart               = models.ForeignKey(Chart, null=True, blank=True, on_delete=models.CASCADE)
     name                = models.CharField(max_length=80)
     axis                = models.CharField(max_length=10, choices=choices)
+    color               = models.CharField(max_length=10, default='#000')
 
     def __str__(self):
         return self.name + f' - ({self.axis})' 

@@ -17,8 +17,19 @@ class DepartmentListSerializer(serializers.ModelSerializer):
 
         repr['label']               = instance.name
         repr['href']                = instance.slug
-        repr['icon']                = instance.icon
+        repr['icon_str']            = instance.icon
         repr['description']         = instance.name
         repr['color']               = instance.color
+
+        return repr
+
+class DepartmentDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+    
+    def to_representation(self, instance):
+        repr = dict()
+        repr['label']               = instance.name
+        # repr['description']         = instance.description
 
         return repr
