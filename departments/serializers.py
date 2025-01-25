@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from reports.serializers import ReportDetailsSeriail
 
 class DepartmentListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,8 +29,13 @@ class DepartmentDetailsSerializer(serializers.ModelSerializer):
         model = Department
     
     def to_representation(self, instance):
+        report_details              = ReportDetailsSeriail(instance.reports.all(), many=True)
         repr = dict()
         repr['label']               = instance.name
         # repr['description']         = instance.description
+        repr['icon']                = instance.icon
+        repr['color']               = instance.color
+
+        repr['charts']              = report_details.data
 
         return repr

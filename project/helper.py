@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from django.conf import settings
 import pdfkit
-from reports.models import ChartAxis
+from reports.models import ChartAxis, Chart
 
 MODULES_NAMES = {
     'sessions':'sessions',
@@ -99,12 +99,13 @@ def data_to_chart_data(chart_id):
     y_cols = ['BUCKET_1', 'BUCKET_2', 'BUCKET_3', 'BUCKET_4', 'BUCKET_5', 'BUCKET_6']
     df = pd.read_csv('./96_data.csv')
     
-    datasets = []
+    datasets    = []
+    chart       = Chart.objects.filter(id=chart_id).first()
     for col in y_cols:
-        axis = ChartAxis.objects.filter(chart__id=chart_id, name=col).first()
+        axis = ChartAxis.objects.filter(chart=chart, name=col).first()
         if axis and axis.axis == 'y':
             datasets.append({
-                'yAxisID'           : axis.name,
+                'yAxisID'           : 'y',
                 'label'             : axis.name,
                 'borderColor'       : axis.color,
                 'backgroundColor'   : axis.color,
@@ -112,8 +113,15 @@ def data_to_chart_data(chart_id):
             })
 
     data = {
-        'labels': list(df[x_cols]),
-        'datasets': datasets
+        'data' : {
+            'labels': list(df[x_cols]),
+            'datasets': datasets
+        },
+        'options':{
+            'type': str(chart.chart_type),
+            
+        }
+        
     }
 
     return data

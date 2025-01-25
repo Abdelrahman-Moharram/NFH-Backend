@@ -4,7 +4,7 @@ from departments.models import Department
 
 class Report(BaseModel):
     name                = models.CharField(max_length=254)
-    department          = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
+    department          = models.ForeignKey(Department, related_name='reports', null=True, blank=True, on_delete=models.SET_NULL)
     schema              = models.ForeignKey('Schema', null=True, blank=True, on_delete=models.SET_NULL)
 
     objects   = BaseModelManager
@@ -16,7 +16,7 @@ class Report(BaseModel):
 
 class Chart(BaseModel):
     chart_type          = models.ForeignKey('ChartType', null=True, blank=True, on_delete=models.SET_NULL)
-    report              = models.ForeignKey('Report', null=True, blank=True, on_delete=models.CASCADE)
+    report              = models.ForeignKey('Report', related_name='charts', null=True, blank=True, on_delete=models.CASCADE)
     query               = models.TextField(null=True, blank=True)
 
     objects   = BaseModelManager

@@ -36,7 +36,7 @@ def depratment_details(request, dept_name):
     return Response(
         {
             'department'   : departments_serial.data,
-            'chart'        : data_to_chart_data('60041fab-4f1d-4da3-84a6-eea814b614b7')
+            # 'chart'        : data_to_chart_data('60041fab-4f1d-4da3-84a6-eea814b614b7')
         },
         status=status.HTTP_200_OK
     )
