@@ -1,5 +1,7 @@
 from django.db import models
 from project.models import BaseModel, BaseModelManager
+from django.utils.text import slugify
+
 
 
 class Department(BaseModel):
@@ -8,13 +10,10 @@ class Department(BaseModel):
     icon                = models.FileField(upload_to='departments/icons/')
     color               = models.CharField(max_length=10, default='#000')
     order               = models.IntegerField()    
-
     is_active           = models.BooleanField(default=True)
 
+    slug                = models.SlugField(max_length=255, unique=True, blank=True)  # Slug field
     
-    @property
-    def slug(self):
-        return self.name.lower().replace(" ", '-')
 
 
     objects = BaseModelManager()
@@ -23,6 +22,8 @@ class Department(BaseModel):
         return self.name
     
 
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
