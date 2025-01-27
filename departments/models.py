@@ -12,8 +12,7 @@ class Department(BaseModel):
     order               = models.IntegerField()    
     is_active           = models.BooleanField(default=True)
 
-    slug                = models.SlugField(max_length=255, unique=True, blank=True)  # Slug field
-    
+    slug                = models.SlugField(max_length=255, unique=True, blank=True) 
 
 
     objects = BaseModelManager()

@@ -4,7 +4,6 @@ from departments.serializers import *
 from .models import *
 from rest_framework.decorators import api_view
 from accounts.permissions import permission_allowed
-from project.helper import data_to_chart_data
 
 @api_view(['GET'])
 @permission_allowed('permissions.departments.view')

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Report
-from project.helper import data_to_chart_data
+from .services import data_to_chart_data
 
 
 class ReportDetailsSeriail(serializers.ModelSerializer):

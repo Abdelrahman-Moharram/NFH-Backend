@@ -4,13 +4,7 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from django.conf import settings
 import pdfkit
-from reports.models import ChartAxis, Chart
 
-MODULES_NAMES = {
-    'sessions':'sessions',
-    'cases':'cases',
-    'judgements':'judgements'
-}
 
 
 def paginate_query_set_list(query_set, params, ):
@@ -93,35 +87,3 @@ def to_int(val, default):
             pass
     return default
 
-
-def data_to_chart_data(chart_id):
-    x_cols = 'RECEIVABLES'
-    y_cols = ['BUCKET_1', 'BUCKET_2', 'BUCKET_3', 'BUCKET_4', 'BUCKET_5', 'BUCKET_6']
-    df = pd.read_csv('./96_data.csv')
-    
-    datasets    = []
-    chart       = Chart.objects.filter(id=chart_id).first()
-    for col in y_cols:
-        axis = ChartAxis.objects.filter(chart=chart, name=col).first()
-        if axis and axis.axis == 'y':
-            datasets.append({
-                'yAxisID'           : 'y',
-                'label'             : axis.name,
-                'borderColor'       : axis.color,
-                'backgroundColor'   : axis.color,
-                'data'              : list(df[col]),
-            })
-
-    data = {
-        'data' : {
-            'labels': list(df[x_cols]),
-            'datasets': datasets
-        },
-        'options':{
-            'type': str(chart.chart_type),
-            
-        }
-        
-    }
-
-    return data
