@@ -16,15 +16,15 @@ class Report(BaseModel):
 
 class Chart(BaseModel):
     choices = [
-        ['1/2'  , 3],
-        ['1/3'  , 2],
-        ['2/3'  , 4],
-        ['full' , 6],
+        ['50%'    , '1/2'  ],
+        ['33.33%' , '1/3'  ],
+        ['66.66%' , '2/3'  ],
+        ['100%'   , 'full' ],
     ]
     chart_type          = models.ForeignKey('ChartType', null=True, blank=True, on_delete=models.SET_NULL)
     report              = models.ForeignKey('Report', related_name='charts', null=True, blank=True, on_delete=models.CASCADE)
     query               = models.TextField(null=True, blank=True)
-    width               = models.CharField(max_length=10, default=3, choices=choices)
+    width               = models.CharField(max_length=10, default='50%', choices=choices)
 
     objects   = BaseModelManager
 

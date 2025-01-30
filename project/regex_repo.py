@@ -9,8 +9,11 @@ ar_name_pattern             = '^[ء-ي][ء-ي ]{5,}$'
 common_en_name_pattern      = '^[a-zA-Z]{2,}$'
 common_ar_name_pattern      = '^[ء-ي][ء-ي ]{2,}$'
 email_pattern               = '^[a-z][a-z0-9-_\.]+@[a-z.]+\.[a-z]{2,3}$'
+departmentNamePattern       = '^[a-zA-Z][a-zA-Z0-9 ]{2,}$'
 
 
+
+departmentNameRegex         = {'pattern':departmentNamePattern,    'message':'Department Name should contain at least 3 characters and without any special characters', 'message_ar':'اسم القسم يجب ان يتكون من 3 أحرف على الأقل بدون اي رموز'}
 case_number_regex           = {'pattern':case_number_pattern,      'message':'رقم القضية يجب أن يحتوي على أرقام فقط ولا يقل عن ثلاثة أرقام ولا يزيد عن 20 رقما'}
 username_regex              = {'pattern':username_pattern,         'message':'اسم المستخدم يجب ان يبدأ بأحرف ويحتوي على 3 أحرف على الأقل ولا يحتوي على [+%$#/|\\!]'}
 ar_name_regex               = {'pattern':ar_name_pattern,          'message':'اسم المستخدم باللغة العربية يجب ان يكون كاملا باللغة العربية و بدون أرقام ولا يقل عن 5 أحرف'}
