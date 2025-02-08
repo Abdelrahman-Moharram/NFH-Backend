@@ -5,6 +5,12 @@ from core.services import generate_unique_error_message
 from project.regex_repo import departmentNameRegex
 import re
 
+from django.db.models import CharField
+from django.db.models.functions import Lower
+
+CharField.register_lookup(Lower)
+
+
 
 class DepartmentFormSerializer(serializers.ModelSerializer):
     # order       = serializers.IntegerField()
@@ -13,7 +19,7 @@ class DepartmentFormSerializer(serializers.ModelSerializer):
         fields  = [
             'name',
             'ar_name',
-            'icon',
+            # 'icon',
             'color',
             # 'order'
         ]
@@ -25,10 +31,10 @@ class DepartmentFormSerializer(serializers.ModelSerializer):
     
 
     def validate_name(self, value):
-        if not self.is_update and Department.objects.filter(name_lower=value.lower()).exists():
+        if Department.objects.filter(name__lower=value.lower()) and not self.is_update:
             raise serializers.ValidationError(generate_unique_error_message(lang=self.context['lang'], ar_name='اسم القسم', name='Department Name'))
         
-        if re.fullmatch(departmentNameRegex['pattern'], value):
+        if not re.fullmatch(departmentNameRegex['pattern'], value):
             raise serializers.ValidationError(departmentNameRegex['message_ar']if self.context['lang'] == 'ar' else departmentNameRegex['message'])
 
         return value
@@ -66,7 +72,7 @@ class DepartmentListSerializer(serializers.ModelSerializer):
 
         repr['label']               = instance.name
         repr['href']                = instance.slug
-        repr['icon_str']            = instance.icon
+        repr['icon']                = instance.icon.url
         repr['description']         = instance.name
         repr['color']               = instance.color
 
@@ -81,7 +87,7 @@ class DepartmentDetailsSerializer(serializers.ModelSerializer):
         repr = dict()
         repr['label']               = instance.name
         # repr['description']         = instance.description
-        repr['icon']                = instance.icon
+        repr['icon']                = instance.icon.url
         repr['color']               = instance.color
 
         repr['charts']              = report_details.data

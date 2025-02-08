@@ -1,11 +1,13 @@
 from django.db import models
 from project.models import BaseModel, BaseModelManager
 from departments.models import Department
+from project.helper import get_connection_types_as_choices_list
+
 
 class Report(BaseModel):
     name                = models.CharField(max_length=254)
     department          = models.ForeignKey(Department, related_name='reports', null=True, blank=True, on_delete=models.SET_NULL)
-    schema              = models.ForeignKey('Schema', null=True, blank=True, on_delete=models.SET_NULL)
+    connection          = models.ForeignKey('Connection', on_delete=models.CASCADE)
 
     objects   = BaseModelManager
 
@@ -21,9 +23,9 @@ class Chart(BaseModel):
         ['66.66%' , '2/3'  ],
         ['100%'   , 'full' ],
     ]
-    chart_type          = models.ForeignKey('ChartType', null=True, blank=True, on_delete=models.SET_NULL)
-    report              = models.ForeignKey('Report', related_name='charts', null=True, blank=True, on_delete=models.CASCADE)
-    query               = models.TextField(null=True, blank=True)
+    chart_type          = models.ForeignKey('ChartType', on_delete=models.CASCADE)
+    report              = models.ForeignKey('Report', related_name='charts', on_delete=models.CASCADE)
+    query               = models.TextField()
     width               = models.CharField(max_length=10, default='50%', choices=choices)
 
     objects   = BaseModelManager
@@ -62,15 +64,24 @@ class ChartType(BaseModel):
 
 
 
-class Schema(BaseModel):
-    name                = models.CharField(max_length=254)
-    # connection_type     = models.CharField(max_length=254)
 
+
+
+class Connection(BaseModel):
+
+    connection_type     = models.CharField(null=True, blank=True, max_length=20, choices=get_connection_types_as_choices_list(), default='oracle')
+    name                = models.CharField(max_length=100)
+    ip                  = models.CharField(max_length=50)
+    port                = models.IntegerField()
+    schema              = models.CharField(max_length=100)
+
+    username            = models.CharField(max_length=200)
+    password            = models.CharField(max_length=254)
     
     objects    = BaseModelManager
 
     def __str__(self):
-        return self.name
+        return f'{self.ip}:{self.port}/{self.schema}'
 
 
 

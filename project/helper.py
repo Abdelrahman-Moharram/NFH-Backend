@@ -6,6 +6,18 @@ from django.conf import settings
 import pdfkit
 
 
+DB_CONNECTION_TYPES = [
+    'mysql',
+    'oracle'
+]
+
+
+def get_connection_types_as_choices_list():
+    l = []
+    for t in DB_CONNECTION_TYPES:
+        l.append([t, t.upper()])
+
+    return l
 
 def paginate_query_set_list(query_set, params, ):
     page            = to_int(params.get('page'), 1)
