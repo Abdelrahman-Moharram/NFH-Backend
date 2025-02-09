@@ -19,7 +19,6 @@ def data_to_chart_data(chart_id):
 
 
     for col in y_cols:
-        print(y_cols)
         axis = ChartAxis.objects.filter(chart=chart, name=col).first()
         if axis and axis.axis == 'y':
             datasets.append({
