@@ -4,20 +4,58 @@ import MySQLdb
 from rest_framework.response import Response
 from rest_framework import status
 
+def connect_to_mysql(confs):
+    
+    try:
+        conn = MySQLdb.Connection(
+            host=confs.ip,
+            user=confs.username,
+            password=confs.password,
+            port=int(confs.port),
+            db=confs.schema
+        )
+    except:
+        return None
 
-def data_to_chart_data(chart_id):
-    # x_cols = 'RECEIVABLES'
-    x_cols = ChartAxis.objects.filter(chart__id=chart_id, axis='x').first().name
-
-    # y_cols = ['BUCKET_1', 'BUCKET_2', 'BUCKET_3', 'BUCKET_4', 'BUCKET_5', 'BUCKET_6']
-    y_cols = [i[0] for i in ChartAxis.objects.filter(chart__id=chart_id, axis='y').values_list('name')]
+    return conn.cursor(MySQLdb.cursors.DictCursor)
 
     
-    datasets    = []
-    chart       = Chart.objects.filter(id=chart_id).first()
-    df          = pd.DataFrame(get_chart_data(query=chart.query, report_id=chart.report.id))
+def create_cursor(confs):
+
+    if confs.connection_type == 'oracle':
+        return connect_to_mysql(confs=confs)
+
+    elif confs.connection_type == 'mysql':
+        return connect_to_mysql(confs=confs)
+    
+    return None
 
 
+
+def data_to_chart_data(chart_id):
+    x_cols = ChartAxis.objects.filter(chart__id=chart_id, axis='x').first()
+    if not x_cols:
+        return []
+    
+    x_cols = x_cols.name
+
+    
+    y_cols = [i[0] for i in ChartAxis.objects.filter(chart__id=chart_id, axis='y').values_list('name')]
+
+
+
+    if len(y_cols) == 0:
+        return []
+
+    datasets        = []
+    chart           = Chart.objects.filter(id=chart_id).first()
+    data, errors    = get_chart_data(query=chart.query, report_id=chart.report.id)
+    if errors:
+        return errors
+
+
+
+    df              = pd.DataFrame(data)
     for col in y_cols:
         axis = ChartAxis.objects.filter(chart=chart, name=col).first()
         if axis and axis.axis == 'y':
@@ -47,54 +85,40 @@ def get_chart_cols(query, report_id):
     report = Report.objects.filter(id=report_id).first()
 
     if not report:
-        return [], Response({'error':f'this report is not found'}, status=status.HTTP_404_NOT_FOUND)
+        return [], {'error':f'this report is not found'}
     
-    confs  = report.connection
+    cursor      = create_cursor(confs=report.connection)
 
-    try:
-        conn = MySQLdb.Connection(
-            host=confs.ip,
-            user=confs.username,
-            passwd=confs.password,
-            port=int(confs.port),
-            db=confs.schema
-        )
-    except:
-        return [], Response({'error':'invalid database credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
-    cursor = conn.cursor()
+    
+    if not cursor :
+        return [], {'error':'invalid database credentials'}
+    
 
     try:
         cursor.execute(query)
     except:
-        return [], Response({'query':'this query is invalid, please try a different one'}, status=status.HTTP_400_BAD_REQUEST)
+        return [], {'query':['this query is invalid, please try a different one']}
+    
     
     return [desc[0] for desc in cursor.description], None
+
 
 def get_chart_data(query, report_id):
     report = Report.objects.filter(id=report_id).first()
 
     if not report:
-        return [], Response({'error':f'this report is not found'}, status=status.HTTP_404_NOT_FOUND)
+        return [], {'error':f'this report is not found'}
     
-    confs  = report.connection
+    cursor      = create_cursor(confs=report.connection)
 
-    try:
-        conn = MySQLdb.Connection(
-            host=confs.ip,
-            user=confs.username,
-            passwd=confs.password,
-            port=int(confs.port),
-            db=confs.schema
-        )
-    except:
-        return [], Response({'error':'invalid database credentials'}, status=status.HTTP_400_BAD_REQUEST)
+    if not cursor :
+        return [], {'error':'invalid database credentials'}
 
-    cursor = conn.cursor(MySQLdb.cursors.DictCursor)
 
     try:
         cursor.execute(query)
     except:
-        return [], Response({'query':'this query is invalid, please try a different one'}, status=status.HTTP_400_BAD_REQUEST)
+        return [], {'query':'this query is invalid, please try a different one'}
     
-    return cursor.fetchall()
+    return cursor.fetchall(), None

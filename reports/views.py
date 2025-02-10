@@ -66,7 +66,7 @@ def add_report_chart_data(request, report_id):
         cols_names, err_res = get_chart_cols(query=chart_serialzer.validated_data.get('query', None), report_id=report_id)
 
         if err_res:
-            return err_res
+            return Response(err_res, status=status.HTTP_400_BAD_REQUEST)
 
         chart_serialzer = chart_serialzer.save(report=report)
 
@@ -81,15 +81,23 @@ def add_chart_axis(request, chart_id):
 
     if not chart:
         return Response({'error':f'this chart is not found'}, status=status.HTTP_404_NOT_FOUND)
-    x = request.POST.get('x', None)
+    
+
+    x_axis = request.POST.get('x', None)
+    y_axes = request.POST.getlist('y', None)
+    
+    if not x_axis or not y_axes:
+        return Response({'error':f'Invalid coordinates for x axis or y axis'}, status=status.HTTP_400_BAD_REQUEST)
+
+    
     x_axis = ChartAxis.objects.create(
             chart = chart,
-            name = x,
+            name = x_axis,
             axis = 'x'
         )
     x_axis.save()
 
-    for a in request.POST.getlist('y', []):
+    for a in y_axes:
         y_axis = ChartAxis.objects.create(
                 chart = chart,
                 name = a,
@@ -112,7 +120,7 @@ def get_report_chart_cols(request, chart_id):
     cols_names, err_res = get_chart_cols(query=chart.query, report_id=chart.report.id)
 
     if err_res:
-        return err_res
+        return Response(err_res, status=status.HTTP_400_BAD_REQUEST)
     
     return Response({'cols_names':cols_names}, status=status.HTTP_200_OK)
 

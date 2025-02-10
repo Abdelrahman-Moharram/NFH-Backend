@@ -19,8 +19,6 @@ class Report(BaseModel):
 class Chart(BaseModel):
     choices = [
         ['50%'    , '1/2'  ],
-        ['33.33%' , '1/3'  ],
-        ['66.66%' , '2/3'  ],
         ['100%'   , 'full' ],
     ]
     chart_type          = models.ForeignKey('ChartType', on_delete=models.CASCADE)
@@ -76,7 +74,7 @@ class Connection(BaseModel):
     schema              = models.CharField(max_length=100)
 
     username            = models.CharField(max_length=200)
-    password            = models.CharField(max_length=254)
+    password            = models.CharField(max_length=254) # encrypt password on saving in db
     
     objects    = BaseModelManager
 
