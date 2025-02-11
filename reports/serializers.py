@@ -31,7 +31,7 @@ class ReportDetailsSeriail(serializers.ModelSerializer):
         repr = dict()
         repr['name']                = instance.name
         repr['connection']          = str(instance.connection)
-        repr['chart']               = data_to_chart_data(instance.charts.first().id) if instance.charts.exists() else None
+        repr['chart']               = data_to_chart_data(instance.charts.first().id) if instance.charts.exists() else None # TODO -> make serialzer error if data is invalid
         
         return repr
 

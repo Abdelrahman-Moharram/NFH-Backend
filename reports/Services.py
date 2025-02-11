@@ -66,7 +66,7 @@ def data_to_chart_data(chart_id):
                 'backgroundColor'   : axis.color,
                 'data'              : list(df[col]),
             })
-    data = {
+    chart_data = {
         'data' : {
             'labels': list(df[x_cols]),
             'datasets': datasets
@@ -78,7 +78,7 @@ def data_to_chart_data(chart_id):
         
     }
 
-    return data
+    return chart_data
 
 
 def get_chart_cols(query, report_id):
