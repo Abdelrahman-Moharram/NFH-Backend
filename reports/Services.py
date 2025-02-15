@@ -1,11 +1,10 @@
 from reports.models import ChartAxis, Chart, Report
 import pandas as pd
 import MySQLdb
-from rest_framework.response import Response
-from rest_framework import status
+import cx_Oracle
+
 
 def connect_to_mysql(confs):
-    
     try:
         conn = MySQLdb.Connection(
             host=confs.ip,
@@ -14,7 +13,18 @@ def connect_to_mysql(confs):
             port=int(confs.port),
             db=confs.schema
         )
-    except:
+    except :
+        return None
+
+    return conn.cursor(MySQLdb.cursors.DictCursor)
+
+def connect_to_oracle(confs):
+    try:
+        # https://stackoverflow.com/questions/10455863/making-a-dictionary-list-with-cx-oracle
+        
+        CONN_STR = '{username}/{password}@{ip}:{port}/{port}'.format(**confs)
+        conn    = cx_Oracle.connect(CONN_STR)
+    except :
         return None
 
     return conn.cursor(MySQLdb.cursors.DictCursor)
@@ -122,3 +132,18 @@ def get_chart_data(query, report_id):
         return [], {'query':'this query is invalid, please try a different one'}
     
     return cursor.fetchall(), None
+
+
+
+def check_db_connection(confs):
+    
+    cursor      = create_cursor(confs=confs)
+    
+
+    if not cursor:
+        return False
+    cursor.execute("SELECT VERSION()")
+
+    if cursor.fetchone():
+        return True
+    return False  

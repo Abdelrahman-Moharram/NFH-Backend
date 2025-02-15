@@ -99,3 +99,12 @@ def to_int(val, default):
             pass
     return default
 
+class DotDict(dict):
+    def __getattr__(self, attr):
+        return self.get(attr)
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
+
+    def __delattr__(self, attr):
+        del self[attr]

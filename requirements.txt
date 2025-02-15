@@ -3,6 +3,7 @@ certifi==2024.8.30
 cffi==1.17.1
 charset-normalizer==3.3.2
 cryptography==43.0.1
+cx_Oracle==8.3.0
 defusedxml==0.7.1
 Django==5.1.1
 django-cors-headers==4.4.0
@@ -11,10 +12,16 @@ djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
 djoser==2.2.3
 idna==3.10
+mysql==0.0.3
 mysqlclient==2.2.4
+numpy==2.2.2
+oauthlib==3.2.2
+pandas==2.2.3
+pdfkit==1.0.0
 pillow==10.4.0
 pycparser==2.22
 PyJWT==2.9.0
+python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python3-openid==3.2.0
 pytz==2024.1
