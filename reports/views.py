@@ -136,11 +136,13 @@ def get_report_chart_cols(request, chart_id):
 def report_dropdown(request):
     chart_types         = list(ChartType.objects.order_by('name').values('id', 'name', 'ar_name'))
     connections         = list(Connection.objects.order_by('name').values('id', 'name'))
+    widths              = [{'value':'50%', 'label':'half width (50%)'},{'value':'100%', 'label':'full width (100%)'}]
 
     return Response(
         {
             'chart_types'       : chart_types,
             'connections'       : connections,
+            'widths'            : widths,
         },
         status=status.HTTP_200_OK
     )

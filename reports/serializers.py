@@ -15,9 +15,12 @@ class DepartmentReportsListSeriail(serializers.ModelSerializer):
         repr['name']                = instance.name
         repr['connection']          = str(instance.connection)
 
-        chart = instance.chart
-        if chart:
-            repr['chart_type']      = str(chart.chart_type)
+        try:
+            chart = instance.chart
+            if chart:
+                repr['chart_type']      = str(chart.chart_type)
+        except :
+            return repr
 
 
         return repr
@@ -30,10 +33,13 @@ class ReportDetailsSeriail(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         repr = dict()
+        try:
+            repr['chart']               = data_to_chart_data(instance.chart.id) if instance.chart else None # TODO -> make serialzer error if data is invalid
+        except:
+            return None
+        
         repr['name']                = instance.name
         repr['connection']          = str(instance.connection)
-        repr['chart']               = data_to_chart_data(instance.chart.id) if instance.chart else None # TODO -> make serialzer error if data is invalid
-        
         return repr
 
 
@@ -61,7 +67,7 @@ class AddChartSerializer(serializers.ModelSerializer):
         fields = [
             'chart_type',
             'query',
-            # 'width',
+            'width',
         ]
     @property
     def is_update(self):

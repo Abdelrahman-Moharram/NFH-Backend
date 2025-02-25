@@ -4,6 +4,89 @@ import MySQLdb
 import cx_Oracle
 
 
+charts_options = {
+    'bar': 
+    {
+        'single':{
+                'responsive': True,
+                'maintainAspectRatio': False,
+                'plugins': {
+                    'legend': { 'display': False },
+                },
+            'scales': {
+            'x': {
+                'display': False, 
+            },
+            'y': {
+                    'display': False,
+                    'min': 0,
+                    'max': 100, 
+                },
+            },
+            'barPercentage': 0.5, 
+            'categoryPercentage': 0.8, 
+        },
+        'multiple':{
+            'responsive': True,
+            'maintainAspectRatio': False,
+            'plugins': {
+                'legend': {'display': False}  # Hide legend
+            },
+            'scales': {
+                'x': {
+                    'grid': {'display': False},  # Hide grid lines
+                    'ticks': {'color': "#4A5A74", 'font': {'weight': "bold"}}
+                },
+                'y': {
+                    'display': False,  # Hide Y-axis labels
+                    'min': 0,
+                    'max': 200,  # Ensures space above max value
+                    'grid': {'display': False}
+                }
+            },
+            
+        }
+    },
+    'line': {
+        'single': {
+            'responsive': True,
+            'maintainAspectRatio': False,
+            'plugins': {
+                'legend': {'display': False}  # Hide legend
+            },
+            'scales': {
+                'x': {
+                    'display': False  # Hide x-axis labels
+                },
+                'y': {
+                    'display': False  # Hide y-axis labels
+                }
+            }
+        },
+        'multiple':{
+            'responsive': True,
+            'maintainAspectRatio': False,
+            'plugins': {
+                'legend': {'display': False},
+                'tooltip': {'enabled': True},
+            },
+            'scales': {
+                'x': {
+                    'ticks': {'color': "#061631"},  # White text
+                    'grid': {'display': False},
+                },
+                'y': {
+                    'ticks': {'color': "#061631"},
+                    'grid': {
+                        'color': "rgba(255, 255, 255, 0.3)",  # Light grid lines
+                        'lineWidth': 0.5,
+                    },
+                },
+            },
+        }
+    }
+}
+
 def connect_to_mysql(confs):
     try:
         conn = MySQLdb.Connection(
@@ -14,9 +97,12 @@ def connect_to_mysql(confs):
             db=confs.schema
         )
     except :
-        return None
+        None
 
+        
     return conn.cursor(MySQLdb.cursors.DictCursor)
+
+    
 
 def connect_to_oracle(confs):
     try:
@@ -24,16 +110,18 @@ def connect_to_oracle(confs):
         
         CONN_STR = '{username}/{password}@{ip}:{port}/{port}'.format(**confs)
         conn    = cx_Oracle.connect(CONN_STR)
+        conn.ping()
     except :
         return None
 
-    return conn.cursor(MySQLdb.cursors.DictCursor)
+    return conn.cursor()
 
     
 def create_cursor(confs):
 
     if confs.connection_type == 'oracle':
-        return connect_to_mysql(confs=confs)
+        print('here')
+        return connect_to_oracle(confs=confs)
 
     elif confs.connection_type == 'mysql':
         return connect_to_mysql(confs=confs)
@@ -64,25 +152,33 @@ def data_to_chart_data(chart_id):
         return errors
 
 
+    chart_type = chart.chart_type.name
+
 
     df              = pd.DataFrame(data)
     for col in y_cols:
         axis = ChartAxis.objects.filter(chart=chart, name=col).first()
         if axis and axis.axis == 'y':
             datasets.append({
-                'yAxisID'           : 'y',
-                'label'             : axis.name,
-                'borderColor'       : axis.color,
-                'backgroundColor'   : axis.color,
-                'data'              : list(df[col]),
+                'yAxisID'               : 'y',
+                'label'                 : axis.name,
+                'borderColor'           : axis.color,
+                'backgroundColor'       : axis.color,
+                'data'                  : list(df[col]),
+                'borderRadius'          : 50,
+                'barThickness'          : 30,
+                'tension'               : 0.4, 
+                'fill'                  : True,
+                'pointRadius'           : 5,
             })
     chart_data = {
         'data' : {
             'labels': list(df[x_cols]),
             'datasets': datasets
         },
-        'options':{
-            'type'  : str(chart.chart_type),
+        'options': charts_options[chart_type]['multiple' if len(y_cols) > 1 else 'single'],
+        'utils' : {
+            'type'  : chart_type,
             'width' : chart.width
         }
         
@@ -142,8 +238,8 @@ def check_db_connection(confs):
 
     if not cursor:
         return False
-    cursor.execute("SELECT VERSION()")
+    
+    
+        
 
-    if cursor.fetchone():
-        return True
     return False  
